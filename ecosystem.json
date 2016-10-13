@@ -1,0 +1,34 @@
+{
+  "apps" : [
+    {
+      "name": "sequelize-poc-"+process.env.NODE_ENV || 'dev',
+      "script": "app.js",
+      "node_args": "--harmony",
+      "watch": ["app", "config", "lib", "app.js", "*.json", "modules", "test-runner.js", "test/*.js"],
+      "ignore_watch": ["[\\/\\\\]\\./", "node_modules", "./**/.*", "*.log"],
+      "env": {
+        "NODE_PATH": "."
+      }
+    }
+  ],
+  "deploy": {
+    "prod": {
+      "user": "user",
+      "host": "example.com",
+      "port": "22",
+      "ref": "origin/prod",
+      "repo": "git@bitbucket.org:YourAccount/Your-Repo.git",
+      "path": "/www/public",
+      "post-deploy": "npm install; NODE_ENV=prod pm2 startOrRestart ecosystem.json"
+    },
+    "beta": {
+      "user": "user",
+      "host": "example.com",
+      "port": "22",
+      "ref": "origin/beta",
+      "repo": "git@bitbucket.org:YourAccount/Your-Repo.git",
+      "path": "/www/public-beta",
+      "post-deploy": "npm install; NODE_ENV=beta pm2 startOrRestart ecosystem.json"
+    }
+  }
+}

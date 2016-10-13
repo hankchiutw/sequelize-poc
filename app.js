@@ -1,0 +1,43 @@
+'use strict';
+
+const express = require('express');
+const config = require('config/config');
+const auth = require('config/auth');
+
+const app = express();
+
+/**
+ * Bootstrap
+ */
+
+require('config/express')(app);
+require('config/routes')(app, auth);
+
+const sequelize = require('config/db');
+sequelize.sync().then(boot);
+
+function boot(){
+    let portInit = process.env.PORT || config.port;
+    (function boot(){
+        let port = portInit;
+        portInit++;
+
+        const server = app.listen(port, function(){
+            console.log('config:', config);
+            console.log('NODE_ENV:', process.env.NODE_ENV);
+            console.log('models:', sequelize.models);
+            console.log('Express app started on port:', port);
+        }).on('error', function(err){
+            if(err.code == 'EADDRINUSE'){
+                console.log('****** EADDRINUSE, find next');
+                boot();
+            }
+        });
+
+        /**
+         * Boot socket.io
+         */
+        require('config/socketHandlers')(server);
+
+    })();
+}
